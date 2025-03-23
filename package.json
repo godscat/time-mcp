@@ -1,6 +1,6 @@
 {
   "name": "time-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Time MCP Server, giving LLMs time awareness capabilities.",
   "private": false,
   "type": "module",
@@ -38,8 +38,7 @@
     "dev": "tsx src/index.ts",
     "build": "tsup && node -e \"require('fs').chmodSync('dist/index.js', '755')\"",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "publish": "npm publish --registry=https://registry.npmjs.org/"
+    "lint:fix": "eslint src --fix"
   },
   "tsup": {
     "entry": [

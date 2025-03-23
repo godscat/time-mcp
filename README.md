@@ -6,12 +6,13 @@ A Model Context Protocol (MCP) server implementation that allows LLMs to have ti
  <img src="./assets/cursor.png"></img>
 </div>
 
-## Features
+## Tools
 
-- Get current time
-- Get relative time
-- Get timestamp
-- Get days in month
+- `current_time`: Get current time (UTC and local time)
+- `relative_time`: Get relative time
+- `get_timestamp`: Get timestamp
+- `days_in_month`: Get days in month
+- `convert_time`: Convert time between timezones
 
 ## Installation
 

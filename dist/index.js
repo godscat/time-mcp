@@ -4,7 +4,6 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import relativeTime from "dayjs/plugin/relativeTime.js";
 
 // src/tools.ts
 var CURRENT_TIME = {
@@ -27,9 +26,15 @@ var CURRENT_TIME = {
           "YYYY/MM/DD",
           "YYYY/MM"
         ],
-        default: "YYYY-MM-DD"
+        default: "YYYY-MM-DD HH:mm:ss"
+      },
+      timezone: {
+        type: "string",
+        description: "The timezone of the time, IANA timezone name, e.g. Asia/Shanghai",
+        default: void 0
       }
-    }
+    },
+    required: ["format"]
   }
 };
 var RELATIVE_TIME = {
@@ -72,10 +77,37 @@ var GET_TIMESTAMP = {
     }
   }
 };
+var CONVERT_TIME = {
+  name: "convert_time",
+  description: "Convert time between timezones.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      sourceTimezone: {
+        type: "string",
+        description: "The source timezone. IANA timezone name, e.g. Asia/Shanghai"
+      },
+      targetTimezone: {
+        type: "string",
+        description: "The target timezone. IANA timezone name, e.g. Europe/London"
+      },
+      time: {
+        type: "string",
+        description: "Date and time in 24-hour format. e.g. 2025-03-23 12:30:00"
+      }
+    },
+    required: ["sourceTimezone", "targetTimezone", "time"]
+  }
+};
 
 // src/index.ts
+import relativeTime from "dayjs/plugin/relativeTime.js";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
 import dayjs from "dayjs";
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 var server = new Server({
   name: "time-mcp",
   version: "0.0.1"
@@ -87,7 +119,7 @@ var server = new Server({
 });
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
-    tools: [CURRENT_TIME, RELATIVE_TIME, DAYS_IN_MONTH, GET_TIMESTAMP]
+    tools: [CURRENT_TIME, RELATIVE_TIME, DAYS_IN_MONTH, GET_TIMESTAMP, CONVERT_TIME]
   };
 });
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
@@ -98,14 +130,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (!checkCurrentTimeArgs(args)) {
           throw new Error(`Invalid arguments for tool: [${name}]`);
         }
-        const format = args.format;
-        const result = getCurrentTime(format);
+        const { format, timezone: timezone2 } = args;
+        const result = getCurrentTime(format, timezone2);
         return {
           success: true,
           content: [
             {
               type: "text",
-              text: result
+              text: `Current UTC time is ${result.utc}, and the time in ${result.timezone} is ${result.local}.`
             }
           ]
         };
@@ -158,6 +190,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ]
         };
       }
+      case "convert_time": {
+        if (!checkConvertTimeArgs(args)) {
+          throw new Error(`Invalid arguments for tool: [${name}]`);
+        }
+        const { sourceTimezone, targetTimezone, time } = args;
+        const { sourceTime, targetTime, timeDiff } = convertTime(sourceTimezone, targetTimezone, time);
+        return {
+          success: true,
+          content: [
+            {
+              type: "text",
+              text: `Current time in ${sourceTimezone} is ${sourceTime}, and the time in ${targetTimezone} is ${targetTime}. The time difference is ${timeDiff} hours.`
+            }
+          ]
+        };
+      }
       default: {
         throw new Error(`Unknown tool: ${name}`);
       }
@@ -175,8 +223,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     };
   }
 });
-function getCurrentTime(format) {
-  return dayjs().format(format);
+function getCurrentTime(format, timezone2) {
+  const utcTime = dayjs.utc();
+  const localTimezone = timezone2 ?? dayjs.tz.guess();
+  const localTime = dayjs().tz(localTimezone);
+  return {
+    utc: utcTime.format(format),
+    local: localTime.format(format),
+    timezone: localTimezone
+  };
 }
 function getRelativeTime(time) {
   return dayjs(time).fromNow();
@@ -187,8 +242,18 @@ function getTimestamp(time) {
 function getDaysInMonth(date) {
   return dayjs(date).daysInMonth();
 }
+function convertTime(sourceTimezone, targetTimezone, time) {
+  const sourceTime = time ? dayjs(time).tz(sourceTimezone) : dayjs().tz(sourceTimezone);
+  const targetTime = sourceTime.tz(targetTimezone);
+  const formatString = "YYYY-MM-DD HH:mm:ss";
+  return {
+    sourceTime: sourceTime.format(formatString),
+    targetTime: targetTime.format(formatString),
+    timeDiff: dayjs(targetTime).diff(dayjs(sourceTime), "hours")
+  };
+}
 function checkCurrentTimeArgs(args) {
-  return typeof args === "object" && args !== null && "format" in args && typeof args.format === "string";
+  return typeof args === "object" && args !== null && "format" in args && typeof args.format === "string" && ("timezone" in args ? typeof args.timezone === "string" : true);
 }
 function checkRelativeTimeArgs(args) {
   return typeof args === "object" && args !== null && "time" in args && typeof args.time === "string";
@@ -198,6 +263,9 @@ function checkDaysInMonthArgs(args) {
 }
 function checkTimestampArgs(args) {
   return typeof args === "object" && args !== null && "time" in args && (typeof args.time === "string" || args.time === void 0);
+}
+function checkConvertTimeArgs(args) {
+  return typeof args === "object" && args !== null && "sourceTimezone" in args && typeof args.sourceTimezone === "string" && "targetTimezone" in args && typeof args.targetTimezone === "string" && "time" in args && typeof args.time === "string";
 }
 async function runServer() {
   try {

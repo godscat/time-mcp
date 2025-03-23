@@ -20,9 +20,15 @@ export const CURRENT_TIME: Tool = {
           'YYYY/MM/DD',
           'YYYY/MM',
         ],
-        default: 'YYYY-MM-DD',
+        default: 'YYYY-MM-DD HH:mm:ss',
+      },
+      timezone: {
+        type: 'string',
+        description: 'The timezone of the time, IANA timezone name, e.g. Asia/Shanghai',
+        default: undefined,
       },
     },
+    required: ['format'],
   },
 };
 
@@ -66,5 +72,28 @@ export const GET_TIMESTAMP: Tool = {
         default: undefined,
       },
     },
+  },
+};
+
+export const CONVERT_TIME: Tool = {
+  name: 'convert_time',
+  description: 'Convert time between timezones.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      sourceTimezone: {
+        type: 'string',
+        description: 'The source timezone. IANA timezone name, e.g. Asia/Shanghai',
+      },
+      targetTimezone: {
+        type: 'string',
+        description: 'The target timezone. IANA timezone name, e.g. Europe/London',
+      },
+      time: {
+        type: 'string',
+        description: 'Date and time in 24-hour format. e.g. 2025-03-23 12:30:00',
+      },
+    },
+    required: ['sourceTimezone', 'targetTimezone', 'time'],
   },
 };
