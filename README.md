@@ -10,9 +10,10 @@ A Model Context Protocol (MCP) server implementation that allows LLMs to have ti
 
 - `current_time`: Get current time (UTC and local time)
 - `relative_time`: Get relative time
-- `get_timestamp`: Get timestamp
+- `get_timestamp`: Get timestamp for the time
 - `days_in_month`: Get days in month
 - `convert_time`: Convert time between timezones
+- `get_week_year`: Get week and isoWeek of the year
 
 ## Installation
 
