@@ -53,7 +53,7 @@ var RELATIVE_TIME = {
 };
 var DAYS_IN_MONTH = {
   name: "days_in_month",
-  description: "Get the number of days in a month.",
+  description: "Get the number of days in a month. If no date is provided, get the number of days in the current month.",
   inputSchema: {
     type: "object",
     properties: {
@@ -66,14 +66,13 @@ var DAYS_IN_MONTH = {
 };
 var GET_TIMESTAMP = {
   name: "get_timestamp",
-  description: "Get the timestamp of a time.",
+  description: "Get the timestamp for the specified time, or the current time if none is provided.",
   inputSchema: {
     type: "object",
     properties: {
       time: {
         type: "string",
-        description: "The time to get the timestamp. Format: YYYY-MM-DD HH:mm:ss",
-        default: void 0
+        description: "The time to get the timestamp. Format: YYYY-MM-DD HH:mm:ss"
       }
     }
   }

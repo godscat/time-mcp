@@ -49,7 +49,7 @@ export const RELATIVE_TIME: Tool = {
 
 export const DAYS_IN_MONTH: Tool = {
   name: 'days_in_month',
-  description: 'Get the number of days in a month.',
+  description: 'Get the number of days in a month. If no date is provided, get the number of days in the current month.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -63,14 +63,13 @@ export const DAYS_IN_MONTH: Tool = {
 
 export const GET_TIMESTAMP: Tool = {
   name: 'get_timestamp',
-  description: 'Get the timestamp of a time.',
+  description: 'Get the timestamp for the specified time, or the current time if none is provided.',
   inputSchema: {
     type: 'object',
     properties: {
       time: {
         type: 'string',
         description: 'The time to get the timestamp. Format: YYYY-MM-DD HH:mm:ss',
-        default: undefined,
       },
     },
   },
@@ -101,7 +100,7 @@ export const CONVERT_TIME: Tool = {
 
 export const GET_WEEK_YEAR: Tool = {
   name: 'get_week_year',
-  description: 'Get the week and isoWeek of the year.',
+  description: 'Get the week of the specified date in a year. If no date is provided, get the week of the current date.',
   inputSchema: {
     type: 'object',
     properties: {
