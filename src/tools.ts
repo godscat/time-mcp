@@ -63,7 +63,7 @@ export const DAYS_IN_MONTH: Tool = {
 
 export const GET_TIMESTAMP: Tool = {
   name: 'get_timestamp',
-  description: 'Get the timestamp for the specified time, or the current time if none is provided.',
+  description: 'Get the timestamp for the time.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -100,7 +100,7 @@ export const CONVERT_TIME: Tool = {
 
 export const GET_WEEK_YEAR: Tool = {
   name: 'get_week_year',
-  description: 'Get the week of the specified date in a year. If no date is provided, get the week of the current date.',
+  description: 'Get the week and isoWeek of the year.',
   inputSchema: {
     type: 'object',
     properties: {

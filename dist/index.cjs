@@ -99,7 +99,7 @@ var DAYS_IN_MONTH = {
 };
 var GET_TIMESTAMP = {
   name: "get_timestamp",
-  description: "Get the timestamp for the specified time, or the current time if none is provided.",
+  description: "Get the timestamp for the time.",
   inputSchema: {
     type: "object",
     properties: {
@@ -132,6 +132,19 @@ var CONVERT_TIME = {
     required: ["sourceTimezone", "targetTimezone", "time"]
   }
 };
+var GET_WEEK_YEAR = {
+  name: "get_week_year",
+  description: "Get the week and isoWeek of the year.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      date: {
+        type: "string",
+        description: "The date to get the week and isoWeek of the year. e.g. 2025-03-23"
+      }
+    }
+  }
+};
 
 // src/index.ts
 var import_relativeTime = __toESM(require("dayjs/plugin/relativeTime.js"), 1);
@@ -156,7 +169,7 @@ var server = new import_server.Server({
 });
 server.setRequestHandler(import_types.ListToolsRequestSchema, async () => {
   return {
-    tools: [CURRENT_TIME, RELATIVE_TIME, DAYS_IN_MONTH, GET_TIMESTAMP, CONVERT_TIME]
+    tools: [CURRENT_TIME, RELATIVE_TIME, DAYS_IN_MONTH, GET_TIMESTAMP, CONVERT_TIME, GET_WEEK_YEAR]
   };
 });
 server.setRequestHandler(import_types.CallToolRequestSchema, async (request) => {
