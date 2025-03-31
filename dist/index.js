@@ -47,7 +47,8 @@ var RELATIVE_TIME = {
         type: "string",
         description: "The time to get the relative time from now. Format: YYYY-MM-DD HH:mm:ss"
       }
-    }
+    },
+    required: ["time"]
   }
 };
 var DAYS_IN_MONTH = {
@@ -104,10 +105,14 @@ var CONVERT_TIME = {
 import relativeTime from "dayjs/plugin/relativeTime.js";
 import utc from "dayjs/plugin/utc.js";
 import timezone from "dayjs/plugin/timezone.js";
+import weekOfYear from "dayjs/plugin/weekOfYear.js";
+import isoWeek from "dayjs/plugin/isoWeek.js";
 import dayjs from "dayjs";
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(weekOfYear);
+dayjs.extend(isoWeek);
 var server = new Server({
   name: "time-mcp",
   version: "0.0.1"
@@ -206,6 +211,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ]
         };
       }
+      case "get_week_year": {
+        if (!checkWeekOfYearArgs(args)) {
+          throw new Error(`Invalid arguments for tool: [${name}]`);
+        }
+        const { date } = args;
+        const { week, isoWeek: isoWeek2 } = getWeekOfYear(date);
+        return {
+          success: true,
+          content: [
+            {
+              type: "text",
+              text: `The week of the year is ${week}, and the isoWeek of the year is ${isoWeek2}.`
+            }
+          ]
+        };
+      }
       default: {
         throw new Error(`Unknown tool: ${name}`);
       }
@@ -240,7 +261,15 @@ function getTimestamp(time) {
   return time ? dayjs(time).valueOf() : dayjs().valueOf();
 }
 function getDaysInMonth(date) {
-  return dayjs(date).daysInMonth();
+  return date ? dayjs(date).daysInMonth() : dayjs().daysInMonth();
+}
+function getWeekOfYear(date) {
+  const week = date ? dayjs(date).week() : dayjs().week();
+  const isoWeek2 = date ? dayjs(date).isoWeek() : dayjs().isoWeek();
+  return {
+    week,
+    isoWeek: isoWeek2
+  };
 }
 function convertTime(sourceTimezone, targetTimezone, time) {
   const sourceTime = time ? dayjs(time).tz(sourceTimezone) : dayjs().tz(sourceTimezone);
@@ -266,6 +295,9 @@ function checkTimestampArgs(args) {
 }
 function checkConvertTimeArgs(args) {
   return typeof args === "object" && args !== null && "sourceTimezone" in args && typeof args.sourceTimezone === "string" && "targetTimezone" in args && typeof args.targetTimezone === "string" && "time" in args && typeof args.time === "string";
+}
+function checkWeekOfYearArgs(args) {
+  return typeof args === "object" && args !== null && ("date" in args ? typeof args.date === "string" : true);
 }
 async function runServer() {
   try {

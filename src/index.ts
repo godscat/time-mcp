@@ -7,11 +7,15 @@ import { CURRENT_TIME, DAYS_IN_MONTH, GET_TIMESTAMP, RELATIVE_TIME, CONVERT_TIME
 import relativeTime from 'dayjs/plugin/relativeTime.js';
 import utc from 'dayjs/plugin/utc.js';
 import timezone from 'dayjs/plugin/timezone.js';
+import weekOfYear from 'dayjs/plugin/weekOfYear.js';
+import isoWeek from 'dayjs/plugin/isoWeek.js';
 import dayjs from 'dayjs';
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(weekOfYear);
+dayjs.extend(isoWeek);
 
 export const server = new Server({
   name: 'time-mcp',
@@ -116,6 +120,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
       }
+      case 'get_week_year': {
+        if (!checkWeekOfYearArgs(args)) {
+          throw new Error(`Invalid arguments for tool: [${name}]`);
+        }
+        const { date } = args;
+        const { week, isoWeek } = getWeekOfYear(date);
+        return {
+          success: true,
+          content: [
+            {
+              type: 'text',
+              text: `The week of the year is ${week}, and the isoWeek of the year is ${isoWeek}.`,
+            },
+          ],
+        };
+      }
       default: {
         throw new Error(`Unknown tool: ${name}`);
       }
@@ -154,8 +174,17 @@ function getTimestamp(time?: string) {
   return time ? dayjs(time).valueOf() : dayjs().valueOf();
 }
 
-function getDaysInMonth(date: string) {
-  return dayjs(date).daysInMonth();
+function getDaysInMonth(date?: string) {
+  return date ? dayjs(date).daysInMonth() : dayjs().daysInMonth();
+}
+
+function getWeekOfYear(date?: string) {
+  const week =  date ? dayjs(date).week() : dayjs().week();
+  const isoWeek = date ? dayjs(date).isoWeek() : dayjs().isoWeek();
+  return {
+    week,
+    isoWeek,
+  };
 }
 
 function convertTime(sourceTimezone: string, targetTimezone: string, time?: string) {
@@ -216,6 +245,14 @@ function checkConvertTimeArgs(args: unknown): args is { sourceTimezone: string, 
     typeof args.targetTimezone === 'string' &&
     'time' in args &&
     typeof args.time === 'string'
+  );
+}
+
+function checkWeekOfYearArgs(args: unknown): args is { date: string } {
+  return (
+    typeof args === 'object' &&
+    args !== null &&
+    ('date' in args ? typeof args.date === 'string' : true)
   );
 }
 

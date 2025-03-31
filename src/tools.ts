@@ -43,6 +43,7 @@ export const RELATIVE_TIME: Tool = {
         description: 'The time to get the relative time from now. Format: YYYY-MM-DD HH:mm:ss',
       },
     },
+    required: ['time'],
   },
 };
 
@@ -95,5 +96,19 @@ export const CONVERT_TIME: Tool = {
       },
     },
     required: ['sourceTimezone', 'targetTimezone', 'time'],
+  },
+};
+
+export const GET_WEEK_YEAR: Tool = {
+  name: 'get_week_year',
+  description: 'Get the week and isoWeek of the year.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      date: {
+        type: 'string',
+        description: 'The date to get the week and isoWeek of the year. e.g. 2025-03-23',
+      },
+    },
   },
 };

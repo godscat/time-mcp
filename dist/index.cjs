@@ -80,7 +80,8 @@ var RELATIVE_TIME = {
         type: "string",
         description: "The time to get the relative time from now. Format: YYYY-MM-DD HH:mm:ss"
       }
-    }
+    },
+    required: ["time"]
   }
 };
 var DAYS_IN_MONTH = {
@@ -137,10 +138,14 @@ var CONVERT_TIME = {
 var import_relativeTime = __toESM(require("dayjs/plugin/relativeTime.js"), 1);
 var import_utc = __toESM(require("dayjs/plugin/utc.js"), 1);
 var import_timezone = __toESM(require("dayjs/plugin/timezone.js"), 1);
+var import_weekOfYear = __toESM(require("dayjs/plugin/weekOfYear.js"), 1);
+var import_isoWeek = __toESM(require("dayjs/plugin/isoWeek.js"), 1);
 var import_dayjs = __toESM(require("dayjs"), 1);
 import_dayjs.default.extend(import_relativeTime.default);
 import_dayjs.default.extend(import_utc.default);
 import_dayjs.default.extend(import_timezone.default);
+import_dayjs.default.extend(import_weekOfYear.default);
+import_dayjs.default.extend(import_isoWeek.default);
 var server = new import_server.Server({
   name: "time-mcp",
   version: "0.0.1"
@@ -239,6 +244,22 @@ server.setRequestHandler(import_types.CallToolRequestSchema, async (request) => 
           ]
         };
       }
+      case "get_week_year": {
+        if (!checkWeekOfYearArgs(args)) {
+          throw new Error(`Invalid arguments for tool: [${name}]`);
+        }
+        const { date } = args;
+        const { week, isoWeek: isoWeek2 } = getWeekOfYear(date);
+        return {
+          success: true,
+          content: [
+            {
+              type: "text",
+              text: `The week of the year is ${week}, and the isoWeek of the year is ${isoWeek2}.`
+            }
+          ]
+        };
+      }
       default: {
         throw new Error(`Unknown tool: ${name}`);
       }
@@ -273,7 +294,15 @@ function getTimestamp(time) {
   return time ? (0, import_dayjs.default)(time).valueOf() : (0, import_dayjs.default)().valueOf();
 }
 function getDaysInMonth(date) {
-  return (0, import_dayjs.default)(date).daysInMonth();
+  return date ? (0, import_dayjs.default)(date).daysInMonth() : (0, import_dayjs.default)().daysInMonth();
+}
+function getWeekOfYear(date) {
+  const week = date ? (0, import_dayjs.default)(date).week() : (0, import_dayjs.default)().week();
+  const isoWeek2 = date ? (0, import_dayjs.default)(date).isoWeek() : (0, import_dayjs.default)().isoWeek();
+  return {
+    week,
+    isoWeek: isoWeek2
+  };
 }
 function convertTime(sourceTimezone, targetTimezone, time) {
   const sourceTime = time ? (0, import_dayjs.default)(time).tz(sourceTimezone) : (0, import_dayjs.default)().tz(sourceTimezone);
@@ -299,6 +328,9 @@ function checkTimestampArgs(args) {
 }
 function checkConvertTimeArgs(args) {
   return typeof args === "object" && args !== null && "sourceTimezone" in args && typeof args.sourceTimezone === "string" && "targetTimezone" in args && typeof args.targetTimezone === "string" && "time" in args && typeof args.time === "string";
+}
+function checkWeekOfYearArgs(args) {
+  return typeof args === "object" && args !== null && ("date" in args ? typeof args.date === "string" : true);
 }
 async function runServer() {
   try {
