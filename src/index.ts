@@ -99,7 +99,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: `The timestamp of ${time} is ${result} ms.`,
+              text: time 
+                ? `The timestamp of ${time} (parsed as UTC) is ${result} ms.`
+                : `The current timestamp is ${result} ms.`,
             },
           ],
         };
@@ -171,7 +173,7 @@ function getRelativeTime(time: string) {
 }
 
 function getTimestamp(time?: string) {
-  return time ? dayjs(time).valueOf() : dayjs().valueOf();
+  return time ? dayjs.utc(time).valueOf() : dayjs().valueOf();
 }
 
 function getDaysInMonth(date?: string) {

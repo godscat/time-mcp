@@ -1,8 +1,11 @@
-# 依赖目录
+# Dependencies
 node_modules/
 package-lock.json
 
-# 日志文件
+# Build directory
+dist/
+
+# Log files
 logs/
 *.log
 npm-debug.log*
@@ -12,21 +15,21 @@ yarn-error.log*
 # ESLint
 .eslintcache
 
-# 运行时数据
+# Runtime data
 .DS_Store
 
-# 编辑器目录和文件
+# Editor directories and files
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# TypeScript缓存
+# TypeScript cache
 *.tsbuildinfo
 
-# 覆盖率目录
+# Coverage directory
 coverage/
 
-# 临时文件
+# Temporary files
 tmp/
 temp/
