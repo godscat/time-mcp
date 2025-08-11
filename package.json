@@ -1,6 +1,6 @@
 {
   "name": "time-mcp",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Time MCP Server, giving LLMs time awareness capabilities.",
   "private": false,
   "type": "module",

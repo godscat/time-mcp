@@ -69,7 +69,7 @@ export const GET_TIMESTAMP: Tool = {
     properties: {
       time: {
         type: 'string',
-        description: 'The time to get the timestamp. Format: YYYY-MM-DD HH:mm:ss',
+        description: 'The time to get the timestamp. Format: YYYY-MM-DD HH:mm:ss.SSS',
       },
     },
   },

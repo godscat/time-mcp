@@ -229,11 +229,12 @@ function checkDaysInMonthArgs(args: unknown): args is { date: string } {
 }
 
 function checkTimestampArgs(args: unknown): args is { time?: string } {
+  if (args === undefined || args === null) {
+    return true;
+  }
   return (
     typeof args === 'object' &&
-    args !== null &&
-    'time' in args &&
-    (typeof args.time === 'string' || args.time === undefined)
+    (!('time' in (args as Record<string, unknown>)) || typeof (args as { time?: unknown }).time === 'string')
   );
 }
 
