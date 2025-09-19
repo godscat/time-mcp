@@ -10,6 +10,7 @@ export default tseslint.config(
       'dist/**',
       'build/**',
       'coverage/**',
+      'tests/**',
       '*.js',
       '*.d.ts',
     ],

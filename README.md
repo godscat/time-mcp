@@ -28,11 +28,13 @@ npx -y @smithery/cli install @yokingma/time-mcp --client claude
 ```
 
 ### Manually install (Optional)
+
 ```shell
 npm install -g time-mcp
 ```
 
 ### using npx
+
 ```shell
 npx -y time-mcp
 ```
@@ -62,6 +64,19 @@ Add this to your `./codeium/windsurf/model_config.json` file:
     "time-mcp": {
       "command": "npx",
       "args": ["-y", "time-mcp"]
+    }
+  }
+}
+```
+
+## Running on Cherry Studio
+
+```json
+{
+  "mcpServers": {
+    "mcp-time-local": {
+      "command": "node",
+      "args": ["E:/Workspace/mcp-servers/time-mcp/dist/index.js"]
     }
   }
 }

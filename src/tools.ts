@@ -111,3 +111,75 @@ export const GET_WEEK_YEAR: Tool = {
     },
   },
 };
+
+export const GET_WEEK_DATES: Tool = {
+  name: 'get_week_dates',
+  description: 'Get the date range for a given ISO week number and year.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      year: {
+        type: 'integer',
+        description: 'The year. e.g. 2025',
+      },
+      week: {
+        type: 'integer',
+        description: 'The ISO week number (1-53). e.g. 12',
+      },
+    },
+    required: ['year', 'week'],
+  },
+};
+
+export const GET_WORKDAYS: Tool = {
+  name: 'get_workdays',
+  description: 'Get a list of workdays (Monday to Friday) for a given week and year.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      year: {
+        type: 'integer',
+        description: 'The year. e.g. 2025',
+      },
+      week: {
+        type: 'integer',
+        description: 'The ISO week number (1-53). e.g. 12',
+      },
+      format: {
+        type: 'string',
+        description: 'The date format for output. Default: YYYY-MM-DD',
+        enum: [
+          'YYYY-MM-DD',
+          'MM/DD/YYYY',
+          'DD/MM/YYYY',
+          'YYYY/MM/DD',
+          'YYYY年MM月DD日',
+          'MM-DD-YYYY',
+        ],
+        default: 'YYYY-MM-DD',
+      },
+    },
+    required: ['year', 'week'],
+  },
+};
+
+export const GET_ISO_WEEKS_IN_MONTH: Tool = {
+  name: 'get_iso_weeks_in_month',
+  description: 'Get the ISO week numbers contained in a specific month.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      year: {
+        type: 'integer',
+        description: 'The year. e.g. 2025',
+      },
+      month: {
+        type: 'integer',
+        description: 'The month (1-12). e.g. 3 for March',
+        minimum: 1,
+        maximum: 12,
+      },
+    },
+    required: ['year', 'month'],
+  },
+};
