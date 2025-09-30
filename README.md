@@ -137,32 +137,51 @@ current_time(format: "YYYY-MM-DD HH:mm:ss", timezone: "Asia/Shanghai")
 convert_time(sourceTimezone: "UTC", targetTimezone: "Asia/Shanghai", time: "2025-03-17 12:00:00")
 ```
 
-### Workday Queries with Chinese Holidays
+### Workday Queries (Standard & Chinese Holidays)
 
 ```bash
-# Get workdays for March 2025 (Chinese region)
+# Get workdays for ISO week 12 of 2025 (standard Mon-Fri)
+get_workdays_by_week(year: 2025, week: 12)
+
+# Get workdays for March 2025 (Chinese holidays)
 get_workdays_by_month(year: 2025, month: 3, region: "china")
 
-# Get workdays for Q1 2025
-get_workdays_by_quarter(year: 2025, quarter: 1, region: "china")
+# Get workdays for Q1 2025 (standard Mon-Fri)
+get_workdays_by_quarter(year: 2025, quarter: 1)
 
-# Get workdays for custom date range
+# Get workdays for custom date range (Chinese holidays)
 get_workdays_by_range(startDate: "2025-03-01", endDate: "2025-03-31", region: "china")
 
-# Get workday statistics
-get_workday_stats(startDate: "2025-01-01", endDate: "2025-12-31", region: "china")
+# Get workday statistics (standard Mon-Fri)
+get_workday_stats(startDate: "2025-01-01", endDate: "2025-12-31")
 ```
+
+**Note**: `region` parameter is optional:
+
+- `region: "china"` - Use Chinese holidays and workday adjustments
+- `region: ""` or omit - Standard Monday-Friday workdays (default)
 
 ### Custom Configuration
 
 ```bash
-# Custom workdays and holidays
+# Custom workdays and holidays (Chinese region)
 get_workdays_by_month(
   year: 2025,
   month: 3,
   region: "china",
   customWorkdays: ["2025-03-08"],  // Override holiday
   customHolidays: ["2025-03-15"]   // Custom holiday
+)
+
+# Minimal configuration (standard Mon-Fri)
+get_workdays_by_week(year: 2025, week: 12)
+
+# Custom format with Chinese holidays
+get_workdays_by_quarter(
+  year: 2025,
+  quarter: 1,
+  region: "china",
+  format: "YYYY年MM月DD日"
 )
 ```
 
@@ -209,7 +228,7 @@ pnpm test:watch       # Watch mode for development
 ## 📊 Project Stats
 
 - **Tools**: 14 comprehensive time and workday tools
-- **Code Coverage**: 100% with 65+ test cases
+- **Code Coverage**: 100% with 77 test cases
 - **Bundle Size**: ~58KB (ESM), ~61KB (CJS)
 - **Holiday Data**: 35KB (2004-2025 Chinese holidays)
 - **Dependencies**: Minimal, production-ready
