@@ -133,7 +133,7 @@ export const GET_WEEK_DATES: Tool = {
 
 export const GET_WORKDAYS: Tool = {
   name: 'get_workdays',
-  description: 'Get a list of workdays (Monday to Friday) for a given week and year.',
+  description: 'Get a list of workdays for a given week and year. Supports Chinese holidays and workday adjustments when region is set to "china".',
   inputSchema: {
     type: 'object',
     properties: {
@@ -157,6 +157,38 @@ export const GET_WORKDAYS: Tool = {
           'MM-DD-YYYY',
         ],
         default: 'YYYY-MM-DD',
+      },
+      region: {
+        type: 'string',
+        description: 'Region for holiday calculations. Use "china" for Chinese holidays, or leave empty for standard Monday-Friday workdays.',
+        enum: ['china', ''],
+        default: '',
+      },
+      useHolidays: {
+        type: 'boolean',
+        description: 'Whether to use holiday data for workday calculations. Only applicable when region is "china".',
+        default: true,
+      },
+      refreshData: {
+        type: 'boolean',
+        description: 'Whether to refresh holiday data before calculation. Only applicable when region is "china" and useHolidays is true.',
+        default: false,
+      },
+      customWorkdays: {
+        type: 'array',
+        description: 'Custom workday dates (YYYY-MM-DD format) that should be treated as workdays regardless of holidays or weekends.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+      customHolidays: {
+        type: 'array',
+        description: 'Custom holiday dates (YYYY-MM-DD format) that should be treated as holidays regardless of region settings.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
       },
     },
     required: ['year', 'week'],

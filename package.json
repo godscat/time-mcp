@@ -11,9 +11,14 @@
     "ModelContextProtocol",
     "Time MCP Server",
     "LLM Tool",
-    "dayjs"
+    "dayjs",
+    "Workday",
+    "Holiday"
   ],
   "author": "zac.ma",
+  "contributors": [
+    "zhujingjing"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -26,7 +31,8 @@
     "time-mcp": "dist/index.js"
   },
   "files": [
-    "dist/**"
+    "dist/**",
+    "chinese-days.json"
   ],
   "publishConfig": {
     "access": "public"
@@ -37,6 +43,7 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsup && node -e \"require('fs').chmodSync('dist/index.js', '755')\"",
+    "postinstall": "node scripts/download-holidays.js",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "test": "vitest",
@@ -79,6 +86,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.7.0",
-    "dayjs": "^1.11.13"
+    "dayjs": "^1.11.13",
+    "node-fetch": "^3.3.2"
   }
 }

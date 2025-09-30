@@ -4,6 +4,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CURRENT_TIME, DAYS_IN_MONTH, GET_TIMESTAMP, RELATIVE_TIME, CONVERT_TIME, GET_WEEK_YEAR, GET_WEEK_DATES, GET_WORKDAYS, GET_ISO_WEEKS_IN_MONTH } from './tools.js';
+import { HolidayManager } from './holiday-manager.js';
 import relativeTime from 'dayjs/plugin/relativeTime.js';
 import utc from 'dayjs/plugin/utc.js';
 import timezone from 'dayjs/plugin/timezone.js';
@@ -158,27 +159,35 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (!checkWorkdaysArgs(args)) {
           throw new Error(`Invalid arguments for tool: [${name}]`);
         }
-        const { year, week, format } = args;
-        const workdays = getWorkdays(year, week, format);
-        
+        const { year, week, format, region, useHolidays, refreshData, customWorkdays, customHolidays } = args;
+        const workdays = await getWorkdays(year, week, format, region, useHolidays, refreshData, customWorkdays, customHolidays);
+
         // 创建结构化的工作日数据
-        const structuredWorkdays = workdays.map((date, index) => {
-          const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        const structuredWorkdays = workdays.map((item) => {
           return {
-            date: date,
-            day: dayNames[index],
+            date: item.date,
+            day: item.dayName,
             week: week,
             year: year,
-            isWeekend: false,
+            isWeekend: item.isWeekend,
+            isHoliday: item.isHoliday,
+            isWorkday: item.isWorkday,
+            isInLieuDay: item.isInLieuDay,
+            isCustomWorkday: item.isCustomWorkday,
+            isCustomHoliday: item.isCustomHoliday,
+            holidayInfo: item.holidayInfo,
+            workdayInfo: item.workdayInfo,
+            inLieuDayInfo: item.inLieuDayInfo,
           };
         });
-        
+
+        const regionText = region === 'china' ? ' (China region with holidays)' : ' (Standard Monday-Friday)';
         return {
           success: true,
           content: [
             {
               type: 'text',
-              text: `Workdays for ISO week ${week} of ${year}:\n${workdays.map(day => `- ${day}`).join('\n')}`,
+              text: `Workdays for ISO week ${week} of ${year}${regionText}:\n${workdays.map(item => `- ${item.date} (${item.dayName})${item.isHoliday ? ' 🏖️' : item.isWorkday ? ' 🏢' : ''}`).join('\n')}`,
             },
             {
               type: 'text',
@@ -277,24 +286,142 @@ export function getWeekDates(year: number, week: number) {
   };
 }
 
-export function getWorkdays(year: number, week: number, format: string = 'YYYY-MM-DD') {
+interface HolidayInfo {
+  date: string;
+  name: string;
+  chineseName: string;
+  type: number;
+  isHoliday: boolean;
+}
+
+interface WorkdayDataInfo {
+  date: string;
+  name: string;
+  chineseName: string;
+  type: number;
+  isWorkday: boolean;
+}
+
+interface InLieuDayInfo {
+  date: string;
+  name: string;
+  chineseName: string;
+  type: number;
+  isInLieuDay: boolean;
+}
+
+interface WorkdayInfo {
+  date: string;
+  dayName: string;
+  isWeekend: boolean;
+  isHoliday: boolean;
+  isWorkday: boolean;
+  isInLieuDay: boolean;
+  isCustomWorkday: boolean;
+  isCustomHoliday: boolean;
+  holidayInfo?: HolidayInfo;
+  workdayInfo?: WorkdayDataInfo;
+  inLieuDayInfo?: InLieuDayInfo;
+}
+
+export async function getWorkdays(
+  year: number,
+  week: number,
+  format: string = 'YYYY-MM-DD',
+  region: string = '',
+  useHolidays: boolean = true,
+  refreshData: boolean = false,
+  customWorkdays: string[] = [],
+  customHolidays: string[] = [],
+): Promise<WorkdayInfo[]> {
   const firstDayOfYear = dayjs(`${year}-01-01`);
   const firstMonday = firstDayOfYear.startOf('isoWeek');
-  
+
   if (firstDayOfYear.day() === 1) {
     firstMonday.year(firstDayOfYear.year());
   } else {
     firstMonday.add(1, 'week');
   }
-  
+
   const targetWeekStart = firstMonday.add(week - 1, 'week');
-  const workdays = [];
-  
-  for (let i = 0; i < 5; i++) {
-    const workday = targetWeekStart.add(i, 'day');
-    workdays.push(workday.format(format));
+  const workdays: WorkdayInfo[] = [];
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  // 如果使用中国节假日数据，初始化节假日管理器
+  let holidayManager: HolidayManager | null = null;
+  if (region === 'china' && useHolidays) {
+    holidayManager = HolidayManager.getInstance();
+    await holidayManager.initialize();
+
+    if (refreshData) {
+      await holidayManager.refreshData();
+    }
   }
-  
+
+  // 获取整周的所有日期
+  for (let i = 0; i < 7; i++) {
+    const currentDate = targetWeekStart.add(i, 'day');
+    const dateString = currentDate.format('YYYY-MM-DD');
+    const dayOfWeek = currentDate.day();
+
+    const workdayInfo: WorkdayInfo = {
+      date: currentDate.format(format),
+      dayName: dayNames[dayOfWeek],
+      isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
+      isHoliday: false,
+      isWorkday: false,
+      isInLieuDay: false,
+      isCustomWorkday: customWorkdays.includes(dateString),
+      isCustomHoliday: customHolidays.includes(dateString),
+    };
+
+    // 如果是自定义工作日，强制为工作日
+    if (workdayInfo.isCustomWorkday) {
+      workdayInfo.isWorkday = true;
+      workdayInfo.isHoliday = false;
+      workdayInfo.isWeekend = false;
+      workdays.push(workdayInfo);
+      continue;
+    }
+
+    // 如果是自定义节假日，强制为节假日
+    if (workdayInfo.isCustomHoliday) {
+      workdayInfo.isWorkday = false;
+      workdayInfo.isHoliday = true;
+      workdays.push(workdayInfo);
+      continue;
+    }
+
+    // 使用中国节假日数据
+    if (region === 'china' && useHolidays && holidayManager) {
+      workdayInfo.isHoliday = holidayManager.isHoliday(dateString);
+      workdayInfo.isWorkday = holidayManager.isWorkday(dateString);
+      workdayInfo.isInLieuDay = holidayManager.isInLieuDay(dateString);
+
+      if (workdayInfo.isHoliday) {
+        workdayInfo.holidayInfo = holidayManager.getHolidayInfo(dateString);
+      }
+      if (workdayInfo.isWorkday) {
+        workdayInfo.workdayInfo = holidayManager.getWorkdayInfo(dateString);
+      }
+      if (workdayInfo.isInLieuDay) {
+        workdayInfo.inLieuDayInfo = holidayManager.getInLieuDayInfo(dateString);
+      }
+
+      // 中国工作日判断逻辑
+      const isActualWorkday = holidayManager.isWorkdayForChineseCalendar(dateString);
+      workdayInfo.isWorkday = isActualWorkday;
+    } else {
+      // 标准工作日判断逻辑（周一到周五）
+      workdayInfo.isWorkday = !workdayInfo.isWeekend;
+    }
+
+    // 只添加实际工作日
+    if (workdayInfo.isWorkday) {
+      workdays.push(workdayInfo);
+    }
+  }
+
   return workdays;
 }
 
@@ -415,7 +542,16 @@ function checkWeekDatesArgs(args: unknown): args is { year: number, week: number
   );
 }
 
-function checkWorkdaysArgs(args: unknown): args is { year: number, week: number, format?: string } {
+function checkWorkdaysArgs(args: unknown): args is {
+  year: number,
+  week: number,
+  format?: string,
+  region?: string,
+  useHolidays?: boolean,
+  refreshData?: boolean,
+  customWorkdays?: string[],
+  customHolidays?: string[]
+} {
   if (
     typeof args === 'object' &&
     args !== null &&
@@ -426,10 +562,56 @@ function checkWorkdaysArgs(args: unknown): args is { year: number, week: number,
     args.week >= 1 &&
     args.week <= 53
   ) {
+    // 检查 format 参数
     if ('format' in args) {
       const validFormats = ['YYYY-MM-DD', 'MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY/MM/DD', 'YYYY年MM月DD日', 'MM-DD-YYYY'];
-      return typeof args.format === 'string' && validFormats.includes(args.format);
+      if (typeof args.format !== 'string' || !validFormats.includes(args.format)) {
+        return false;
+      }
     }
+
+    // 检查 region 参数
+    if ('region' in args) {
+      const validRegions = ['china', ''];
+      if (typeof args.region !== 'string' || !validRegions.includes(args.region)) {
+        return false;
+      }
+    }
+
+    // 检查 useHolidays 参数
+    if ('useHolidays' in args && typeof args.useHolidays !== 'boolean') {
+      return false;
+    }
+
+    // 检查 refreshData 参数
+    if ('refreshData' in args && typeof args.refreshData !== 'boolean') {
+      return false;
+    }
+
+    // 检查 customWorkdays 参数
+    if ('customWorkdays' in args) {
+      if (!Array.isArray(args.customWorkdays)) {
+        return false;
+      }
+      for (const date of args.customWorkdays) {
+        if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          return false;
+        }
+      }
+    }
+
+    // 检查 customHolidays 参数
+    if ('customHolidays' in args) {
+      if (!Array.isArray(args.customHolidays)) {
+        return false;
+      }
+      for (const date of args.customHolidays) {
+        if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          return false;
+        }
+      }
+    }
+
     return true;
   }
   return false;
@@ -450,8 +632,19 @@ function checkIsoWeeksInMonthArgs(args: unknown): args is { year: number, month:
 
 async function runServer() {
   try {
-
     process.stdout.write('Starting Time MCP server...\n');
+
+    // 初始化节假日管理器
+    const holidayManager = HolidayManager.getInstance();
+    await holidayManager.initialize();
+
+    const lastSyncTime = holidayManager.getLastSyncTime();
+    if (lastSyncTime) {
+      process.stdout.write(`Holiday data loaded, last sync: ${lastSyncTime.toISOString()}\n`);
+    } else {
+      process.stdout.write('Holiday data initialization completed\n');
+    }
+
     const transport = new StdioServerTransport();
     await server.connect(transport);
 

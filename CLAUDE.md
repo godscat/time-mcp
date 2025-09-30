@@ -10,16 +10,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # 开发模式运行
-npm run dev
+pnpm run dev
 
 # 构建项目
-npm run build
+pnpm run build
 
 # 代码检查
-npm run lint
+pnpm run lint
 
 # 自动修复代码问题
-npm run lint:fix
+pnpm run lint:fix
 ```
 
 ## 架构说明
@@ -31,6 +31,7 @@ npm run lint:fix
 - `eslint.config.mjs` - ESLint 配置，使用 TypeScript 规则
 
 ### 工具实现
+
 项目提供 6 个时间相关工具：
 
 1. `current_time` - 获取当前时间（UTC 和本地时间）
