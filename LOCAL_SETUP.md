@@ -1,89 +1,29 @@
-# 本地 MCP Server 配置指南
+# 🚀 Local Development Setup - Time MCP Server
 
-## 🎯 不发布到 npm，本地使用 Time MCP Server
+## Quick Setup
 
-## 方法对比
+Choose the method that best fits your development workflow:
 
-| 方法               | 优点               | 缺点         | 适用场景 |
-| ------------------ | ------------------ | ------------ | -------- |
-| **本地构建文件**   | 稳定、性能好       | 需要重新构建 | 生产环境 |
-| **npm link**       | 方便、自动更新     | 全局安装     | 开发环境 |
-| **源代码直接运行** | 实时更新、调试方便 | 依赖 tsx     | 开发调试 |
+### Method 1: Built Files (Recommended for Production)
 
----
+```bash
+pnpm run build
+```
 
-## 📦 方法 1：使用本地构建文件（推荐）
+**Configuration:**
 
-### 步骤
+```json
+{
+  "mcpServers": {
+    "time-mcp": {
+      "command": "node",
+      "args": ["E:/Workspace/mcp-servers/time-mcp/dist/index.js"]
+    }
+  }
+}
+```
 
-1. **构建项目**
-
-   ```bash
-   pnpm run build
-   ```
-
-2. **配置文件**
-
-   ```json
-   {
-     "mcpServers": {
-       "time-mcp": {
-         "command": "node",
-         "args": ["E:/Workspace/mcp-servers/time-mcp/dist/index.js"]
-       }
-     }
-   }
-   ```
-
-3. **更新时重新构建**
-
-   ```bash
-   pnpm run build
-   ```
-
----
-
-## 🔗 方法 2：使用 pnpm link（开发推荐）
-
-### 步骤
-
-1. **在项目目录中执行**
-
-   ```bash
-   pnpm run build
-   pnpm link
-   ```
-
-2. **配置文件**
-
-   ```json
-   {
-     "mcpServers": {
-       "time-mcp": {
-         "command": "time-mcp"
-       }
-     }
-   }
-   ```
-
-3. **更新时重新链接**
-
-   ```bash
-   pnpm run build
-   pnpm link
-   ```
-
-4. **取消链接**
-
-   ```bash
-   pnpm unlink -g time-mcp
-   ```
-
----
-
-## 📝 方法 3：直接使用源代码（开发调试）
-
-### 配置文件
+### Method 2: Source Code (Development)
 
 ```json
 {
@@ -96,26 +36,26 @@
 }
 ```
 
-**或者：**
+### Method 3: pnpm Link (Testing)
+
+```bash
+pnpm run build
+pnpm link
+```
+
+**Configuration:**
 
 ```json
 {
   "mcpServers": {
     "time-mcp": {
-      "command": "node",
-      "args": [
-        "--loader",
-        "tsx",
-        "E:/Workspace/mcp-servers/time-mcp/src/index.ts"
-      ]
+      "command": "time-mcp"
     }
   }
 }
 ```
 
----
-
-## 🏠 配置文件位置
+## Configuration File Locations
 
 ### Claude Desktop
 
@@ -124,107 +64,53 @@
 
 ### Cursor
 
-- 项目根目录：`mcp.json`
+- Project root: `mcp.json`
 
 ### Windsurf
 
 - `./codeium/windsurf/model_config.json`
 
----
+### Cherry Studio
 
-## 🔧 完整配置示例
+- Application settings UI
 
-### Claude Desktop 配置
+## Update Workflow
 
-```json
-{
-  "mcpServers": {
-    "time-mcp": {
-      "command": "node",
-      "args": ["E:/Workspace/mcp-servers/time-mcp/dist/index.js"]
-    }
-  }
-}
-```
+### After Code Changes
 
-### Cursor 配置
+- **Method 1**: `pnpm run build`
+- **Method 2**: Changes apply automatically
+- **Method 3**: `pnpm run build && pnpm link`
 
-```json
-{
-  "mcpServers": {
-    "time-mcp": {
-      "command": "node",
-      "args": ["E:/Workspace/mcp-servers/time-mcp/dist/index.js"]
-    }
-  }
-}
-```
-
----
-
-## 🔄 更新流程
-
-### 修改代码后
-
-1. **如果使用方法 1（构建文件）**
-
-   ```bash
-   pnpm run build
-   ```
-
-2. **如果使用方法 2（npm link）**
-
-   ```bash
-   pnpm run build
-   pnpm link
-   ```
-
-3. **如果使用方法 3（源代码）**
-   - 无需额外操作，直接生效
-
----
-
-## 🧪 测试本地配置
-
-### 测试脚本
+## Testing
 
 ```bash
-# 测试本地构建
-node E:/Workspace/mcp-servers/time-mcp/dist/index.js
+# Test built version
+node dist/index.js
 
-# 测试源代码
-npx tsx E:/Workspace/mcp-servers/time-mcp/src/index.ts
+# Test source code
+npx tsx src/index.ts
 
-# 测试 pnpm link
+# Test linked version
 time-mcp
 ```
 
----
+## Troubleshooting
 
-## 🐛 常见问题
+### Common Issues
 
-### 1. 路径问题
+1. **Path Problems**: Use absolute paths in configuration
+2. **Permission Issues**: Build files should have execute permissions
+3. **Dependencies**: Run `pnpm install` if using source code method
 
-- 使用绝对路径
-- Windows 使用 `/` 或 `\\` 都可以
-- 确保路径中没有空格
+### Recommended Approach
 
-### 2. 权限问题
+- **Development**: Use Method 2 (source code) for real-time updates
+- **Testing**: Use Method 1 (built files) for production-like testing
+- **Production**: Use Method 1 (built files) for stability
 
-- 确保构建文件有执行权限
-- Windows 通常不需要特殊权限
+## First Run
 
-### 3. 依赖问题
+The server will automatically download Chinese holiday data on first startup (~35KB). This may take a few seconds. Subsequent runs will use cached data for faster startup.
 
-- 如果使用源代码方式，确保安装了 tsx
-- 构建文件方式不需要额外依赖
-
----
-
-## 💡 推荐方案
-
-**开发环境**：使用方法 3（源代码直接运行）
-**测试环境**：使用方法 1（本地构建文件）
-**生产环境**：使用方法 1（本地构建文件）
-
-这样可以在开发和测试中快速迭代，在生产环境中保持稳定。
+For detailed development information, see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).

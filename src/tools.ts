@@ -131,8 +131,8 @@ export const GET_WEEK_DATES: Tool = {
   },
 };
 
-export const GET_WORKDAYS: Tool = {
-  name: 'get_workdays',
+export const GET_WORKDAYS_BY_WEEK: Tool = {
+  name: 'get_workdays_by_week',
   description: 'Get a list of workdays for a given week and year. Supports Chinese holidays and workday adjustments when region is set to "china".',
   inputSchema: {
     type: 'object',
@@ -213,5 +213,316 @@ export const GET_ISO_WEEKS_IN_MONTH: Tool = {
       },
     },
     required: ['year', 'month'],
+  },
+};
+
+export const GET_WORKDAYS_BY_MONTH: Tool = {
+  name: 'get_workdays_by_month',
+  description: 'Get a list of workdays for a given month and year. Supports Chinese holidays and workday adjustments when region is set to "china".',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      year: {
+        type: 'integer',
+        description: 'The year. e.g. 2025',
+      },
+      month: {
+        type: 'integer',
+        description: 'The month (1-12). e.g. 3 for March',
+        minimum: 1,
+        maximum: 12,
+      },
+      format: {
+        type: 'string',
+        description: 'The date format for output. Default: YYYY-MM-DD',
+        enum: [
+          'YYYY-MM-DD',
+          'MM/DD/YYYY',
+          'DD/MM/YYYY',
+          'YYYY/MM/DD',
+          'YYYY年MM月DD日',
+          'MM-DD-YYYY',
+        ],
+        default: 'YYYY-MM-DD',
+      },
+      region: {
+        type: 'string',
+        description: 'Region for holiday calculations. Use "china" for Chinese holidays, or leave empty for standard Monday-Friday workdays.',
+        enum: ['china', ''],
+        default: '',
+      },
+      useHolidays: {
+        type: 'boolean',
+        description: 'Whether to use holiday data for workday calculations. Only applicable when region is "china".',
+        default: true,
+      },
+      refreshData: {
+        type: 'boolean',
+        description: 'Whether to refresh holiday data before calculation. Only applicable when region is "china" and useHolidays is true.',
+        default: false,
+      },
+      customWorkdays: {
+        type: 'array',
+        description: 'Custom workday dates (YYYY-MM-DD format) that should be treated as workdays regardless of holidays or weekends.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+      customHolidays: {
+        type: 'array',
+        description: 'Custom holiday dates (YYYY-MM-DD format) that should be treated as holidays regardless of region settings.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+    },
+    required: ['year', 'month'],
+  },
+};
+
+export const GET_WORKDAYS_BY_RANGE: Tool = {
+  name: 'get_workdays_by_range',
+  description: 'Get a list of workdays for a given date range. Supports Chinese holidays and workday adjustments when region is set to "china".',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      startDate: {
+        type: 'string',
+        description: 'The start date (YYYY-MM-DD format). e.g. 2025-03-01',
+        pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+      },
+      endDate: {
+        type: 'string',
+        description: 'The end date (YYYY-MM-DD format). e.g. 2025-03-31',
+        pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+      },
+      format: {
+        type: 'string',
+        description: 'The date format for output. Default: YYYY-MM-DD',
+        enum: [
+          'YYYY-MM-DD',
+          'MM/DD/YYYY',
+          'DD/MM/YYYY',
+          'YYYY/MM/DD',
+          'YYYY年MM月DD日',
+          'MM-DD-YYYY',
+        ],
+        default: 'YYYY-MM-DD',
+      },
+      region: {
+        type: 'string',
+        description: 'Region for holiday calculations. Use "china" for Chinese holidays, or leave empty for standard Monday-Friday workdays.',
+        enum: ['china', ''],
+        default: '',
+      },
+      useHolidays: {
+        type: 'boolean',
+        description: 'Whether to use holiday data for workday calculations. Only applicable when region is "china".',
+        default: true,
+      },
+      refreshData: {
+        type: 'boolean',
+        description: 'Whether to refresh holiday data before calculation. Only applicable when region is "china" and useHolidays is true.',
+        default: false,
+      },
+      customWorkdays: {
+        type: 'array',
+        description: 'Custom workday dates (YYYY-MM-DD format) that should be treated as workdays regardless of holidays or weekends.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+      customHolidays: {
+        type: 'array',
+        description: 'Custom holiday dates (YYYY-MM-DD format) that should be treated as holidays regardless of region settings.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+    },
+    required: ['startDate', 'endDate'],
+  },
+};
+
+export const GET_WORKDAYS_BY_QUARTER: Tool = {
+  name: 'get_workdays_by_quarter',
+  description: 'Get a list of workdays for a given quarter and year. Supports Chinese holidays and workday adjustments when region is set to "china".',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      year: {
+        type: 'integer',
+        description: 'The year. e.g. 2025',
+      },
+      quarter: {
+        type: 'integer',
+        description: 'The quarter (1-4). e.g. 1 for Q1 (January-March)',
+        minimum: 1,
+        maximum: 4,
+      },
+      format: {
+        type: 'string',
+        description: 'The date format for output. Default: YYYY-MM-DD',
+        enum: [
+          'YYYY-MM-DD',
+          'MM/DD/YYYY',
+          'DD/MM/YYYY',
+          'YYYY/MM/DD',
+          'YYYY年MM月DD日',
+          'MM-DD-YYYY',
+        ],
+        default: 'YYYY-MM-DD',
+      },
+      region: {
+        type: 'string',
+        description: 'Region for holiday calculations. Use "china" for Chinese holidays, or leave empty for standard Monday-Friday workdays.',
+        enum: ['china', ''],
+        default: '',
+      },
+      useHolidays: {
+        type: 'boolean',
+        description: 'Whether to use holiday data for workday calculations. Only applicable when region is "china".',
+        default: true,
+      },
+      refreshData: {
+        type: 'boolean',
+        description: 'Whether to refresh holiday data before calculation. Only applicable when region is "china" and useHolidays is true.',
+        default: false,
+      },
+      customWorkdays: {
+        type: 'array',
+        description: 'Custom workday dates (YYYY-MM-DD format) that should be treated as workdays regardless of holidays or weekends.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+      customHolidays: {
+        type: 'array',
+        description: 'Custom holiday dates (YYYY-MM-DD format) that should be treated as holidays regardless of region settings.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+    },
+    required: ['year', 'quarter'],
+  },
+};
+
+export const GET_WORKDAYS_BY_YEAR: Tool = {
+  name: 'get_workdays_by_year',
+  description: 'Get a list of workdays for a given year. Supports Chinese holidays and workday adjustments when region is set to "china".',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      year: {
+        type: 'integer',
+        description: 'The year. e.g. 2025',
+      },
+      format: {
+        type: 'string',
+        description: 'The date format for output. Default: YYYY-MM-DD',
+        enum: [
+          'YYYY-MM-DD',
+          'MM/DD/YYYY',
+          'DD/MM/YYYY',
+          'YYYY/MM/DD',
+          'YYYY年MM月DD日',
+          'MM-DD-YYYY',
+        ],
+        default: 'YYYY-MM-DD',
+      },
+      region: {
+        type: 'string',
+        description: 'Region for holiday calculations. Use "china" for Chinese holidays, or leave empty for standard Monday-Friday workdays.',
+        enum: ['china', ''],
+        default: '',
+      },
+      useHolidays: {
+        type: 'boolean',
+        description: 'Whether to use holiday data for workday calculations. Only applicable when region is "china".',
+        default: true,
+      },
+      refreshData: {
+        type: 'boolean',
+        description: 'Whether to refresh holiday data before calculation. Only applicable when region is "china" and useHolidays is true.',
+        default: false,
+      },
+      customWorkdays: {
+        type: 'array',
+        description: 'Custom workday dates (YYYY-MM-DD format) that should be treated as workdays regardless of holidays or weekends.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+      customHolidays: {
+        type: 'array',
+        description: 'Custom holiday dates (YYYY-MM-DD format) that should be treated as holidays regardless of region settings.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+    },
+    required: ['year'],
+  },
+};
+
+export const GET_WORKDAY_STATS: Tool = {
+  name: 'get_workday_stats',
+  description: 'Get statistics about workdays, holidays, and weekends for a given date range. Supports Chinese holidays when region is set to "china".',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      startDate: {
+        type: 'string',
+        description: 'The start date (YYYY-MM-DD format). e.g. 2025-03-01',
+        pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+      },
+      endDate: {
+        type: 'string',
+        description: 'The end date (YYYY-MM-DD format). e.g. 2025-03-31',
+        pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+      },
+      region: {
+        type: 'string',
+        description: 'Region for holiday calculations. Use "china" for Chinese holidays, or leave empty for standard Monday-Friday workdays.',
+        enum: ['china', ''],
+        default: '',
+      },
+      useHolidays: {
+        type: 'boolean',
+        description: 'Whether to use holiday data for workday calculations. Only applicable when region is "china".',
+        default: true,
+      },
+      refreshData: {
+        type: 'boolean',
+        description: 'Whether to refresh holiday data before calculation. Only applicable when region is "china" and useHolidays is true.',
+        default: false,
+      },
+      customWorkdays: {
+        type: 'array',
+        description: 'Custom workday dates (YYYY-MM-DD format) that should be treated as workdays regardless of holidays or weekends.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+      customHolidays: {
+        type: 'array',
+        description: 'Custom holiday dates (YYYY-MM-DD format) that should be treated as holidays regardless of region settings.',
+        items: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}$',
+        },
+      },
+    },
+    required: ['startDate', 'endDate'],
   },
 };

@@ -64,14 +64,15 @@ describe("Time MCP Server - Core Functions", () => {
   });
 
   describe("getWorkdays", () => {
-    it("should return exactly 5 workdays", () => {
-      const result = getWorkdays(2025, 12);
+    it("should return exactly 5 workdays", async () => {
+      const result = await getWorkdays(2025, 12);
       expect(result).toHaveLength(5);
     });
 
-    it("should return Monday to Friday for default format", () => {
-      const result = getWorkdays(2025, 12);
-      expect(result).toEqual([
+    it("should return Monday to Friday for default format", async () => {
+      const result = await getWorkdays(2025, 12);
+      const workdayDates = result.map(w => w.date);
+      expect(workdayDates).toEqual([
         "2025-03-17", // Monday
         "2025-03-18", // Tuesday
         "2025-03-19", // Wednesday
@@ -80,9 +81,10 @@ describe("Time MCP Server - Core Functions", () => {
       ]);
     });
 
-    it("should support different date formats", () => {
-      const result = getWorkdays(2024, 1, "MM/DD/YYYY");
-      expect(result).toEqual([
+    it("should support different date formats", async () => {
+      const result = await getWorkdays(2024, 1, "MM/DD/YYYY");
+      const workdayDates = result.map(w => w.date);
+      expect(workdayDates).toEqual([
         "01/01/2024",
         "01/02/2024",
         "01/03/2024",
@@ -91,9 +93,10 @@ describe("Time MCP Server - Core Functions", () => {
       ]);
     });
 
-    it("should support Chinese date format", () => {
-      const result = getWorkdays(2025, 1, "YYYY年MM月DD日");
-      expect(result).toEqual([
+    it("should support Chinese date format", async () => {
+      const result = await getWorkdays(2025, 1, "YYYY年MM月DD日");
+      const workdayDates = result.map(w => w.date);
+      expect(workdayDates).toEqual([
         "2024年12月30日",
         "2024年12月31日",
         "2025年01月01日",
@@ -102,19 +105,43 @@ describe("Time MCP Server - Core Functions", () => {
       ]);
     });
 
-    it("should handle cross-year workdays", () => {
-      const result = getWorkdays(2025, 1);
+    it("should handle cross-year workdays", async () => {
+      const result = await getWorkdays(2025, 1);
       // Should include days from both 2024 and 2025
-      expect(result[0]).toBe("2024-12-30"); // Monday in 2024
-      expect(result[4]).toBe("2025-01-03"); // Friday in 2025
+      expect(result[0].date).toBe("2024-12-30"); // Monday in 2024
+      expect(result[4].date).toBe("2025-01-03"); // Friday in 2025
     });
 
-    it("should start with Monday and end with Friday", () => {
-      const result = getWorkdays(2025, 12);
-      const monday = dayjs(result[0]);
-      const friday = dayjs(result[4]);
+    it("should start with Monday and end with Friday", async () => {
+      const result = await getWorkdays(2025, 12);
+      const monday = dayjs(result[0].date);
+      const friday = dayjs(result[4].date);
       expect(monday.day()).toBe(1); // Monday
       expect(friday.day()).toBe(5); // Friday
+    });
+
+    it("should return workdays with correct structure", async () => {
+      const result = await getWorkdays(2025, 12);
+
+      result.forEach(workday => {
+        expect(workday).toHaveProperty('date');
+        expect(workday).toHaveProperty('dayName');
+        expect(workday).toHaveProperty('isWeekend');
+        expect(workday).toHaveProperty('isHoliday');
+        expect(workday).toHaveProperty('isWorkday');
+        expect(workday).toHaveProperty('isInLieuDay');
+        expect(workday).toHaveProperty('isCustomWorkday');
+        expect(workday).toHaveProperty('isCustomHoliday');
+
+        expect(typeof workday.date).toBe('string');
+        expect(typeof workday.dayName).toBe('string');
+        expect(typeof workday.isWeekend).toBe('boolean');
+        expect(typeof workday.isHoliday).toBe('boolean');
+        expect(typeof workday.isWorkday).toBe('boolean');
+        expect(typeof workday.isInLieuDay).toBe('boolean');
+        expect(typeof workday.isCustomWorkday).toBe('boolean');
+        expect(typeof workday.isCustomHoliday).toBe('boolean');
+      });
     });
   });
 

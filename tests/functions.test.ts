@@ -81,14 +81,15 @@ describe('Time MCP Server - Unit Tests', () => {
   });
 
   describe('getWorkdays', () => {
-    it('should return exactly 5 workdays', () => {
-      const result = getWorkdays(2025, 12);
+    it('should return exactly 5 workdays', async () => {
+      const result = await getWorkdays(2025, 12);
       expect(result).toHaveLength(5);
     });
 
-    it('should return Monday to Friday for week 12 of 2025', () => {
-      const result = getWorkdays(2025, 12);
-      expect(result).toEqual([
+    it('should return Monday to Friday for week 12 of 2025', async () => {
+      const result = await getWorkdays(2025, 12);
+      const workdayDates = result.map(w => w.date);
+      expect(workdayDates).toEqual([
         '2025-03-17', // Monday
         '2025-03-18', // Tuesday
         '2025-03-19', // Wednesday
@@ -97,9 +98,10 @@ describe('Time MCP Server - Unit Tests', () => {
       ]);
     });
 
-    it('should handle different date formats', () => {
-      const result = getWorkdays(2025, 12, 'MM/DD/YYYY');
-      expect(result).toEqual([
+    it('should handle different date formats', async () => {
+      const result = await getWorkdays(2025, 12, 'MM/DD/YYYY');
+      const workdayDates = result.map(w => w.date);
+      expect(workdayDates).toEqual([
         '03/17/2025',
         '03/18/2025',
         '03/19/2025',
@@ -108,9 +110,10 @@ describe('Time MCP Server - Unit Tests', () => {
       ]);
     });
 
-    it('should handle Chinese date format', () => {
-      const result = getWorkdays(2025, 12, 'YYYY年MM月DD日');
-      expect(result).toEqual([
+    it('should handle Chinese date format', async () => {
+      const result = await getWorkdays(2025, 12, 'YYYY年MM月DD日');
+      const workdayDates = result.map(w => w.date);
+      expect(workdayDates).toEqual([
         '2025年03月17日',
         '2025年03月18日',
         '2025年03月19日',
@@ -119,16 +122,91 @@ describe('Time MCP Server - Unit Tests', () => {
       ]);
     });
 
-    it('should handle edge case - week 1 of 2024', () => {
-      const result = getWorkdays(2024, 1);
+    it('should handle edge case - week 1 of 2024', async () => {
+      const result = await getWorkdays(2024, 1);
       expect(result).toHaveLength(5);
-      expect(result[0]).toBe('2024-01-01'); // Monday
+      expect(result[0].date).toBe('2024-01-01'); // Monday
     });
 
-    it('should handle cross-year week properly', () => {
-      const result = getWorkdays(2025, 1);
+    it('should handle cross-year week properly', async () => {
+      const result = await getWorkdays(2025, 1);
       expect(result).toHaveLength(5);
-      expect(result[0]).toBe('2024-12-30'); // Monday of week 1, 2025
+      expect(result[0].date).toBe('2024-12-30'); // Monday of week 1, 2025
+    });
+
+    it('should filter out weekends and holidays', async () => {
+      const result = await getWorkdays(2025, 12);
+
+      // All returned days should be workdays
+      result.forEach(workday => {
+        expect(workday.isWorkday).toBe(true);
+        expect(workday.isWeekend).toBe(false);
+      });
+    });
+
+    it('should handle Chinese holidays when region is china', async () => {
+      const result = await getWorkdays(2025, 12, 'YYYY-MM-DD', 'china');
+
+      // Check that the function successfully used Chinese region and returned results
+      expect(result.length).toBeGreaterThan(0);
+
+      // Check basic structure is maintained
+      result.forEach(workday => {
+        expect(workday).toHaveProperty('date');
+        expect(workday).toHaveProperty('isWorkday');
+        expect(workday).toHaveProperty('isHoliday');
+        expect(workday).toHaveProperty('isInLieuDay');
+
+        // isInLieuDay should be a boolean
+        expect(typeof workday.isInLieuDay).toBe('boolean');
+      });
+
+      // Compare with non-Chinese result to see if there's a difference
+      const normalResult = await getWorkdays(2025, 12, 'YYYY-MM-DD', '');
+      expect(result.length).toBe(normalResult.length);
+    });
+
+    it('should handle custom workdays and holidays', async () => {
+      const customWorkdays = ['2025-03-22']; // Saturday
+      const customHolidays = ['2025-03-17']; // Monday
+
+      const result = await getWorkdays(2025, 12, 'YYYY-MM-DD', '', false, false, customWorkdays, customHolidays);
+
+      // Check that custom overrides are applied
+      const saturdayWorkday = result.find(w => w.date === '2025-03-22');
+      const mondayHoliday = result.find(w => w.date === '2025-03-17');
+
+      expect(saturdayWorkday).toBeDefined();
+      expect(saturdayWorkday?.isCustomWorkday).toBe(true);
+      expect(saturdayWorkday?.isWorkday).toBe(true);
+
+      expect(mondayHoliday).toBeDefined();
+      expect(mondayHoliday?.isCustomHoliday).toBe(true);
+      expect(mondayHoliday?.isWorkday).toBe(false);
+    });
+
+    it('should return workdays with correct structure', async () => {
+      const result = await getWorkdays(2025, 12);
+
+      result.forEach(workday => {
+        expect(workday).toHaveProperty('date');
+        expect(workday).toHaveProperty('dayName');
+        expect(workday).toHaveProperty('isWeekend');
+        expect(workday).toHaveProperty('isHoliday');
+        expect(workday).toHaveProperty('isWorkday');
+        expect(workday).toHaveProperty('isInLieuDay');
+        expect(workday).toHaveProperty('isCustomWorkday');
+        expect(workday).toHaveProperty('isCustomHoliday');
+
+        expect(typeof workday.date).toBe('string');
+        expect(typeof workday.dayName).toBe('string');
+        expect(typeof workday.isWeekend).toBe('boolean');
+        expect(typeof workday.isHoliday).toBe('boolean');
+        expect(typeof workday.isWorkday).toBe('boolean');
+        expect(typeof workday.isInLieuDay).toBe('boolean');
+        expect(typeof workday.isCustomWorkday).toBe('boolean');
+        expect(typeof workday.isCustomHoliday).toBe('boolean');
+      });
     });
   });
 
