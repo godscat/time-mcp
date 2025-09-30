@@ -1,6 +1,7 @@
 # 📚 API Documentation - Time MCP Server
 
 ## Table of Contents
+
 - [Basic Time Tools](#basic-time-tools)
 - [Advanced Workday Tools](#advanced-workday-tools)
 - [Utility Tools](#utility-tools)
@@ -13,9 +14,11 @@
 ## Basic Time Tools
 
 ### current_time
+
 Get current time in UTC and local timezone.
 
 **Parameters:**
+
 ```typescript
 {
   format?: string;           // Date format (default: "YYYY-MM-DD HH:mm:ss")
@@ -24,6 +27,7 @@ Get current time in UTC and local timezone.
 ```
 
 **Example:**
+
 ```javascript
 // Get current time in Shanghai timezone
 current_time({
@@ -33,6 +37,7 @@ current_time({
 ```
 
 **Available Formats:**
+
 - `h:mm A` (12:30 PM)
 - `h:mm:ss A` (12:30:45 PM)
 - `YYYY-MM-DD HH:mm:ss` (2025-03-17 12:30:45)
@@ -44,9 +49,11 @@ current_time({
 - `YYYY/MM` (2025/03)
 
 ### relative_time
+
 Get relative time from now.
 
 **Parameters:**
+
 ```typescript
 {
   time: string;              // Time in format: YYYY-MM-DD HH:mm:ss
@@ -54,6 +61,7 @@ Get relative time from now.
 ```
 
 **Example:**
+
 ```javascript
 relative_time({
   time: "2025-03-17 12:00:00"
@@ -62,9 +70,11 @@ relative_time({
 ```
 
 ### get_timestamp
+
 Get timestamp for specific time.
 
 **Parameters:**
+
 ```typescript
 {
   time?: string;             // Optional time (default: current time)
@@ -72,6 +82,7 @@ Get timestamp for specific time.
 ```
 
 **Example:**
+
 ```javascript
 get_timestamp({
   time: "2025-03-17 12:00:00"
@@ -80,9 +91,11 @@ get_timestamp({
 ```
 
 ### days_in_month
+
 Get number of days in a month.
 
 **Parameters:**
+
 ```typescript
 {
   date?: string;             // Optional date (default: current month)
@@ -90,6 +103,7 @@ Get number of days in a month.
 ```
 
 **Example:**
+
 ```javascript
 days_in_month({
   date: "2025-03-17"
@@ -98,9 +112,11 @@ days_in_month({
 ```
 
 ### convert_time
+
 Convert time between timezones.
 
 **Parameters:**
+
 ```typescript
 {
   sourceTimezone: string;    // Source IANA timezone
@@ -110,6 +126,7 @@ Convert time between timezones.
 ```
 
 **Example:**
+
 ```javascript
 convert_time({
   sourceTimezone: "UTC",
@@ -119,9 +136,11 @@ convert_time({
 ```
 
 ### get_week_year
+
 Get week and ISO week numbers.
 
 **Parameters:**
+
 ```typescript
 {
   date?: string;             // Optional date (default: current date)
@@ -129,6 +148,7 @@ Get week and ISO week numbers.
 ```
 
 **Example:**
+
 ```javascript
 get_week_year({
   date: "2025-03-17"
@@ -139,9 +159,11 @@ get_week_year({
 ## Advanced Workday Tools
 
 ### get_workdays_by_week
+
 Get workdays for a specific ISO week.
 
 **Parameters:**
+
 ```typescript
 {
   year: number;              // Year (e.g., 2025)
@@ -156,6 +178,7 @@ Get workdays for a specific ISO week.
 ```
 
 **Example:**
+
 ```javascript
 get_workdays_by_week({
   year: 2025,
@@ -166,9 +189,11 @@ get_workdays_by_week({
 ```
 
 ### get_workdays_by_month
+
 Get workdays for a specific month.
 
 **Parameters:**
+
 ```typescript
 {
   year: number;              // Year (e.g., 2025)
@@ -183,6 +208,7 @@ Get workdays for a specific month.
 ```
 
 **Example:**
+
 ```javascript
 get_workdays_by_month({
   year: 2025,
@@ -194,9 +220,11 @@ get_workdays_by_month({
 ```
 
 ### get_workdays_by_range
+
 Get workdays for a custom date range.
 
 **Parameters:**
+
 ```typescript
 {
   startDate: string;         // Start date (YYYY-MM-DD)
@@ -211,6 +239,7 @@ Get workdays for a custom date range.
 ```
 
 **Example:**
+
 ```javascript
 get_workdays_by_range({
   startDate: "2025-03-01",
@@ -220,9 +249,11 @@ get_workdays_by_range({
 ```
 
 ### get_workdays_by_quarter
+
 Get workdays for a specific quarter.
 
 **Parameters:**
+
 ```typescript
 {
   year: number;              // Year (e.g., 2025)
@@ -237,6 +268,7 @@ Get workdays for a specific quarter.
 ```
 
 **Example:**
+
 ```javascript
 get_workdays_by_quarter({
   year: 2025,
@@ -246,9 +278,11 @@ get_workdays_by_quarter({
 ```
 
 ### get_workdays_by_year
+
 Get workdays for an entire year.
 
 **Parameters:**
+
 ```typescript
 {
   year: number;              // Year (e.g., 2025)
@@ -262,6 +296,7 @@ Get workdays for an entire year.
 ```
 
 **Example:**
+
 ```javascript
 get_workdays_by_year({
   year: 2025,
@@ -272,9 +307,11 @@ get_workdays_by_year({
 ## Utility Tools
 
 ### get_week_dates
+
 Get date range for a specific ISO week.
 
 **Parameters:**
+
 ```typescript
 {
   year: number;              // Year (e.g., 2025)
@@ -283,6 +320,7 @@ Get date range for a specific ISO week.
 ```
 
 **Example:**
+
 ```javascript
 get_week_dates({
   year: 2025,
@@ -292,9 +330,11 @@ get_week_dates({
 ```
 
 ### get_iso_weeks_in_month
+
 Get ISO weeks contained in a specific month.
 
 **Parameters:**
+
 ```typescript
 {
   year: number;              // Year (e.g., 2025)
@@ -303,6 +343,7 @@ Get ISO weeks contained in a specific month.
 ```
 
 **Example:**
+
 ```javascript
 get_iso_weeks_in_month({
   year: 2025,
@@ -312,9 +353,11 @@ get_iso_weeks_in_month({
 ```
 
 ### get_workday_stats
+
 Get workday statistics for a date range.
 
 **Parameters:**
+
 ```typescript
 {
   startDate: string;         // Start date (YYYY-MM-DD)
@@ -328,6 +371,7 @@ Get workday statistics for a date range.
 ```
 
 **Example:**
+
 ```javascript
 get_workday_stats({
   startDate: "2025-01-01",
@@ -348,13 +392,16 @@ get_workday_stats({
 ## Chinese Holiday Integration
 
 ### Overview
+
 The Time MCP Server includes comprehensive Chinese holiday data for the years 2004-2025. This includes:
+
 - Official holidays (元旦, 春节, 清明节, 劳动节, 端午节, 中秋节, 国庆节)
 - Workday adjustments (调休工作日)
 - In-lieu days (调休休息日)
 - Regional variations
 
 ### Features
+
 - **Automatic Data Download**: Holiday data is automatically downloaded on first installation
 - **Offline Caching**: Works without internet connection using cached data
 - **Daily Sync**: Automatic data updates at 24:00
@@ -362,6 +409,7 @@ The Time MCP Server includes comprehensive Chinese holiday data for the years 20
 - **Historical Data**: Complete coverage from 2004 to 2025
 
 ### Usage
+
 Set `region: "china"` to enable Chinese holiday support in any workday query:
 
 ```javascript
@@ -376,10 +424,12 @@ get_workdays_by_month({
 ## Configuration Options
 
 ### Region Settings
+
 - `""` (empty string): Standard Monday-Friday workdays
 - `"china"`: Chinese holidays and workday adjustments
 
 ### Date Formats
+
 - `"YYYY-MM-DD"` (default)
 - `"MM/DD/YYYY"`
 - `"DD/MM/YYYY"`
@@ -388,6 +438,7 @@ get_workdays_by_month({
 - `"MM-DD-YYYY"`
 
 ### Custom Dates
+
 Override default behavior with custom workdays and holidays:
 
 ```javascript
@@ -401,13 +452,16 @@ get_workdays_by_month({
 ```
 
 ### Data Refresh
+
 Control holiday data freshness:
+
 - `refreshData: false` (default): Use cached data
 - `refreshData: true`: Force refresh from remote source
 
 ## Response Formats
 
 ### Standard Response
+
 All tools return structured data with both human-readable and machine-readable formats:
 
 ```javascript
@@ -427,6 +481,7 @@ All tools return structured data with both human-readable and machine-readable f
 ```
 
 ### Workday Response Structure
+
 ```javascript
 [
   {
@@ -447,6 +502,7 @@ All tools return structured data with both human-readable and machine-readable f
 ```
 
 ### Holiday Info Structure
+
 ```javascript
 {
   date: "2025-01-01",
@@ -460,6 +516,7 @@ All tools return structured data with both human-readable and machine-readable f
 ## Error Handling
 
 ### Common Errors
+
 - **Invalid date format**: Dates must be in YYYY-MM-DD format
 - **Invalid date range**: Start date must be before or equal to end date
 - **Invalid year**: Year must be a valid number
@@ -469,6 +526,7 @@ All tools return structured data with both human-readable and machine-readable f
 - **Network error**: Failed to download holiday data (falls back to cache)
 
 ### Error Response Format
+
 ```javascript
 {
   success: false,
@@ -484,6 +542,7 @@ All tools return structured data with both human-readable and machine-readable f
 ## Usage Examples
 
 ### Basic Time Queries
+
 ```javascript
 // Get current time in multiple formats
 current_time({ format: "YYYY-MM-DD HH:mm:ss" })
@@ -501,6 +560,7 @@ get_timestamp({ time: "2025-03-17 12:00:00" })
 ```
 
 ### Workday Planning
+
 ```javascript
 // Plan work for March 2025 (Chinese holidays)
 get_workdays_by_month({
@@ -527,6 +587,7 @@ get_workdays_by_range({
 ```
 
 ### Statistical Analysis
+
 ```javascript
 // Get yearly statistics for reporting
 get_workday_stats({
@@ -544,6 +605,7 @@ get_workday_stats({
 ```
 
 ### Custom Configuration
+
 ```javascript
 // Company-specific work schedule
 get_workdays_by_month({
@@ -568,6 +630,7 @@ get_workdays_by_month({
 ## Integration Examples
 
 ### JavaScript/TypeScript
+
 ```typescript
 async function getWorkSchedule() {
   const response = await fetch('mcp-endpoint', {
@@ -594,6 +657,7 @@ async function getWorkSchedule() {
 ```
 
 ### Python
+
 ```python
 import requests
 import json

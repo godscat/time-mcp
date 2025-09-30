@@ -1,10 +1,12 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## 项目概述
 
-这是一个功能强大的 Model Context Protocol (MCP) 服务器实现，为 LLM 提供全面的时间感知能力。项目使用 TypeScript 开发，特别集成了中国节假日数据，构建为一个可全局安装的 CLI 工具。
+这是一个功能强大的 Model Context Protocol (MCP) 服务器实现，为 LLM 提供全面的时间感知能力。
+项目使用 TypeScript 开发，特别集成了中国节假日数据，构建为一个可全局安装的 CLI 工具。
 
 ## 开发命令
 
@@ -39,9 +41,11 @@ pnpm test:coverage
 - `scripts/download-holidays.js` - 节假日数据自动下载脚本
 
 ### 工具实现
+
 项目提供 14 个时间相关工具，分为几大类：
 
-#### 基础时间工具 (6个)
+#### 基础时间工具 (6 个)
+
 1. `current_time` - 获取当前时间（UTC 和本地时间）
 2. `relative_time` - 获取相对时间
 3. `get_timestamp` - 获取时间戳
@@ -49,23 +53,25 @@ pnpm test:coverage
 5. `convert_time` - 时区转换
 6. `get_week_year` - 获取年份中的周数
 
-#### 工作日查询工具 (5个)
-7. `get_workdays_by_week` - 按ISO周数查询工作日（原有功能）
-8. `get_workdays_by_month` - 按月份查询工作日
-9. `get_workdays_by_range` - 按日期范围查询工作日
-10. `get_workdays_by_quarter` - 按季度查询工作日
-11. `get_workdays_by_year` - 按年份查询工作日
+#### 工作日查询工具 (5 个)
 
-#### 辅助工具 (3个)
-12. `get_week_dates` - 获取ISO周的日期范围
-13. `get_iso_weeks_in_month` - 获取月份包含的ISO周数
-14. `get_workday_stats` - 工作日统计信息
+1. `get_workdays_by_week` - 按 ISO 周数查询工作日（原有功能）
+2. `get_workdays_by_month` - 按月份查询工作日
+3. `get_workdays_by_range` - 按日期范围查询工作日
+4. `get_workdays_by_quarter` - 按季度查询工作日
+5. `get_workdays_by_year` - 按年份查询工作日
+
+#### 辅助工具 (3 个)
+
+1. `get_week_dates` - 获取 ISO 周的日期范围
+2. `get_iso_weeks_in_month` - 获取月份包含的 ISO 周数
+3. `get_workday_stats` - 工作日统计信息
 
 ### 技术栈
 
 - **MCP SDK**: `@modelcontextprotocol/sdk` - 实现协议通信
 - **时间处理**: `dayjs` - 配置了 relativeTime、utc、timezone、weekOfYear、isoWeek 插件
-- **中国节假日**: `chinese-days` - 2004-2025年中国节假日和调休数据
+- **中国节假日**: `chinese-days` - 2004-2025 年中国节假日和调休数据
 - **数据下载**: `node-fetch` - 自动下载和缓存节假日数据
 - **构建**: `tsup` - 输出 CommonJS 和 ESM 格式
 - **开发**: `tsx` - 支持 TypeScript 直接运行
@@ -75,13 +81,15 @@ pnpm test:coverage
 ### 关键设计模式
 
 #### 中国节假日集成
+
 - **离线缓存**: 自动下载节假日数据到本地 `chinese-days.json`
-- **每日同步**: 24:00自动更新数据，确保数据新鲜度
+- **每日同步**: 24:00 自动更新数据，确保数据新鲜度
 - **智能降级**: 网络失败时自动使用本地缓存数据
 - **单例模式**: `HolidayManager` 确保数据管理的一致性
-- **Map优化**: O(1) 查找性能的日期索引结构
+- **Map 优化**: O(1) 查找性能的日期索引结构
 
 #### 工作日查询增强
+
 - **多维度查询**: 支持周、月、季度、年、日期范围查询
 - **自定义配置**: 支持自定义工作日和节假日
 - **区域支持**: 中国节假日和标准工作日两种模式
@@ -89,6 +97,7 @@ pnpm test:coverage
 - **统计功能**: 提供详细的工作日、节假日、周末统计
 
 #### 错误处理和验证
+
 - **严格类型检查**: 所有工具参数都有完整的类型守卫
 - **参数验证**: 日期格式、范围、类型等多重验证
 - **优雅降级**: 数据不可用时的容错处理
@@ -104,6 +113,7 @@ pnpm test:coverage
 ### 配置示例
 
 #### Claude Desktop
+
 ```json
 {
   "mcpServers": {
@@ -116,6 +126,7 @@ pnpm test:coverage
 ```
 
 #### Cursor (mcp.json)
+
 ```json
 {
   "mcpServers": {
@@ -138,5 +149,5 @@ pnpm test:coverage
 
 - `chinese-days.json` - 中国节假日数据（35KB，自动下载）
 - 支持节假日、工作日、调休日查询
-- 数据范围：2004-2025年
+- 数据范围：2004-2025 年
 - 自动更新机制
