@@ -1,6 +1,6 @@
 {
-  "name": "time-mcp",
-  "version": "1.0.4",
+  "name": "ez-time-mcp-alt",
+  "version": "1.0.5",
   "description": "Time MCP Server, giving LLMs time awareness capabilities.",
   "private": false,
   "type": "module",
@@ -17,12 +17,12 @@
   ],
   "author": "zac.ma",
   "contributors": [
-    "zhujingjing"
+    "godscat"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yokingma/time-mcp.git"
+    "url": "https://github.com/godscat/time-mcp.git"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

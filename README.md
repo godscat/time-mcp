@@ -1,7 +1,17 @@
 # 🚀 Time MCP Server: Advanced Time Awareness with Chinese Holidays
 
-[![smithery badge](https://smithery.ai/badge/@yokingma/time-mcp)](https://smithery.ai/server/@yokingma/time-mcp) <a href="https://github.com/yokingma/time-mcp/stargazers"><img src="https://img.shields.io/github/stars/yokingma/time-mcp" alt="Github Stars"></a> <a href="https://github.com/yokingma/time-mcp/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple" alt="License"></a> <a href="https://github.com/yokingma/time-mcp/issues/new"><img src="https://img.shields.io/badge/Report a bug-Github-%231F80C0" alt="Report a bug"></a>
-A powerful Model Context Protocol (MCP) server that provides LLMs with comprehensive time awareness capabilities, including **Chinese holiday support** and **offline caching**.
+[![smithery badge](https://smithery.ai/badge/@yokingma/time-mcp)](https://smithery.ai/server/@yokingma/time-mcp)
+<a href="https://github.com/yokingma/time-mcp/stargazers">
+<img src="https://img.shields.io/github/stars/yokingma/time-mcp" alt="Github Stars">
+</a>
+<a href="https://github.com/yokingma/time-mcp/blob/main/LICENSE">
+<img src="https://img.shields.io/badge/license-MIT-purple" alt="License">
+</a>
+<a href="https://github.com/yokingma/time-mcp/issues/new">
+<img src="https://img.shields.io/badge/Report a bug-Github-%231F80C0" alt="Report a bug">
+</a>
+A powerful Model Context Protocol (MCP) server that provides LLMs with comprehensive time awareness capabilities,
+including **Chinese holiday support** and **offline caching**.
 
 <div align="center">
  <img src="./assets/cursor.png" alt="Time MCP Server">
