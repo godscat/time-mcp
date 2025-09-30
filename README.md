@@ -64,10 +64,10 @@ npx -y @smithery/cli install @yokingma/time-mcp --client claude
 
 ```bash
 # Install globally
-npm install -g time-mcp
+npm install -g ez-time-mcp-alt
 
 # Or use with npx (no installation needed)
-npx -y time-mcp
+npx -y ez-time-mcp-alt
 ```
 
 ### 3. Local Development
@@ -89,7 +89,7 @@ pnpm run build
   "mcpServers": {
     "time-mcp": {
       "command": "npx",
-      "args": ["-y", "time-mcp"]
+      "args": ["-y", "ez-time-mcp-alt"]
     }
   }
 }
@@ -102,7 +102,7 @@ pnpm run build
   "mcpServers": {
     "time-mcp": {
       "command": "npx",
-      "args": ["-y", "time-mcp"]
+      "args": ["-y", "ez-time-mcp-alt"]
     }
   }
 }
@@ -115,7 +115,7 @@ pnpm run build
   "mcpServers": {
     "time-mcp": {
       "command": "npx",
-      "args": ["-y", "time-mcp"]
+      "args": ["-y", "ez-time-mcp-alt"]
     }
   }
 }

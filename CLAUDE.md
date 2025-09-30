@@ -106,8 +106,8 @@ pnpm test:coverage
 ### 部署要求
 
 - **Smithery**: `npx -y @smithery/cli install @yokingma/time-mcp --client claude`
-- **npm**: `npm install -g time-mcp`
-- **npx**: `npx -y time-mcp`
+- **npm**: `npm install -g ez-time-mcp-alt`
+- **npx**: `npx -y ez-time-mcp-alt`
 - **支持客户端**: Claude Desktop、Cursor、Windsurf、Cherry Studio
 
 ### 配置示例
@@ -119,7 +119,7 @@ pnpm test:coverage
   "mcpServers": {
     "time-mcp": {
       "command": "npx",
-      "args": ["-y", "time-mcp"]
+      "args": ["-y", "ez-time-mcp-alt"]
     }
   }
 }
@@ -132,7 +132,7 @@ pnpm test:coverage
   "mcpServers": {
     "time-mcp": {
       "command": "npx",
-      "args": ["-y", "time-mcp"]
+      "args": ["-y", "ez-time-mcp-alt"]
     }
   }
 }
